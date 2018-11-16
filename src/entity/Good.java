@@ -1,6 +1,7 @@
 package entity;
 
-import javax.xml.crypto.Data;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -11,22 +12,24 @@ public class Good implements Serializable {
     private int id;
     private String name;
     private int stock;
-    private int price;
-    private Data time;
+    private double price;
+    private Date time;
     private String manufactor;
     private String supplier;
+    private double value;
 
     public Good() {
     }
 
-    public Good(int id, String name, int stock, int price, Data time, String manufactor, String supplier) {
+    public Good(int id, String name, int stock, double price , String supplier, String manufactor, Date time) {
         this.id = id;
         this.name = name;
         this.stock = stock;
         this.price = price;
-        this.time = time;
-        this.manufactor = manufactor;
         this.supplier = supplier;
+        this.manufactor = manufactor;
+        this.time = time;
+        this.value = stock * price;
     }
 
     public int getId() {
@@ -56,7 +59,7 @@ public class Good implements Serializable {
         return this;
     }
 
-    public int getPrice() {
+    public double getPrice() {
         return price;
     }
 
@@ -65,11 +68,11 @@ public class Good implements Serializable {
         return this;
     }
 
-    public Data getTime() {
+    public Date getTime() {
         return time;
     }
 
-    public Good setTime(Data time) {
+    public Good setTime(Date time) {
         this.time = time;
         return this;
     }
@@ -92,17 +95,21 @@ public class Good implements Serializable {
         return this;
     }
 
+    public double getValue() {
+        return value;
+    }
+
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
     @Override
     public String toString() {
-        return "Good{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", stock=" + stock +
-                ", price=" + price +
-                ", time=" + time +
-                ", manufactor='" + manufactor + '\'' +
-                ", supplier='" + supplier + '\'' +
-                '}';
+        return  "货品号：" + id +
+                ", 货品名：'" + name + '\'' +
+                ", 库存：" + stock +
+                ", 价格：" + price  +
+                ", 供应商：'" + supplier + '\'' +
+                ", 生产商：'" + manufactor + '\'' +
+                ", 入库时间：'" + sdf.format(getTime()) + '\'';
     }
 
     @Override

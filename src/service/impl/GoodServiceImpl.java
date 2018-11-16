@@ -4,23 +4,36 @@ import dao.filestore.DaoByFile;
 import entity.Good;
 import service.GoodService;
 
+import java.io.File;
 import java.util.List;
 
 public class GoodServiceImpl implements GoodService {
     private DaoByFile dao = new DaoByFile();
+    private File file;
 
-    public boolean load(){
-        return dao.load();
+    public void load(File FILE_PATH){
+        file = FILE_PATH;
+        dao.load(FILE_PATH);
     }
 
-    public boolean save(){
-        return dao.save();
+    public void load(){
+        file = new File("./Good");
+        dao.load(file);
+    }
+
+    public void save(){
+        dao.save(file);
+    }
+
+    public List<Good> getAll(){
+        return dao.getAll();
     }
 
     @Override
-    public boolean add(Good good) {
-        return dao.add(good);
+    public void add(Good good) throws IllegalArgumentException {
+        dao.add(good);
     }
+
 
     @Override
     public Good search(int id) {
@@ -45,13 +58,11 @@ public class GoodServiceImpl implements GoodService {
     }
 
     @Override
-    public boolean delete(int id) {
+    public boolean delete(int id) throws IllegalArgumentException{
         Good goodT = search(id);
-        return dao.delete(goodT);
+        if(goodT == null) throw new IllegalArgumentException();
+        else return dao.delete(goodT);
+
     }
 
-    @Override
-    public Good modify(int id, Good good) {
-        return null;
-    }
 }

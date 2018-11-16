@@ -2,11 +2,13 @@ package service;
 
 import entity.Good;
 
+import java.util.List;
+
 public interface GoodService {
-    boolean add(Good good);
+    void add(Good good);
+    List<Good> getAll();
     Good search(int id);
     Good search(String name);
     boolean delete(int id);
-    Good modify(int id, Good good);
 
 }

@@ -2,6 +2,7 @@ package dao;
 
 import entity.Good;
 
+import java.io.File;
 import java.util.List;
 
 public interface GoodDAO {
@@ -11,8 +12,8 @@ public interface GoodDAO {
 
     List<Good> getAll();
 
-    boolean load();
+    boolean load(File FILE_PATH);
 
-    boolean save();
+    boolean save(File FILE_PATH);
 
 }
