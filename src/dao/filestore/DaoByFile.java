@@ -13,11 +13,15 @@ public class DaoByFile implements GoodDAO {
     private static ArrayList<Good> goodArrayList = new ArrayList<>();
 
     @Override
-    public boolean add(Good good) throws IllegalArgumentException{
+    public boolean add(Good good) throws IllegalArgumentException,  NullPointerException{
         for(Good g:goodArrayList){
             if(g.getId()==good.getId()){
                 throw new IllegalArgumentException();
             }
+            if(g.getName().equals(good.getName())){
+                throw new NullPointerException();
+            }
+
         }
         return goodArrayList.add(good);
     }

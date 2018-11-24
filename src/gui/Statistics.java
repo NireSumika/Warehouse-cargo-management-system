@@ -75,7 +75,7 @@ class Statistics extends JFrame {
             tbody[i][4] = good.getSupplier();
             tbody[i][5] = good.getManufactor();
             tbody[i][6] = sdf.format(good.getTime());
-            tbody[i][7] = good.getValue()+"";
+            tbody[i][7] = String.format("%.1f",good.getValue());
         }
         return tbody;
     }

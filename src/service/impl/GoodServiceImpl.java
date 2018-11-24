@@ -30,7 +30,7 @@ public class GoodServiceImpl implements GoodService {
     }
 
     @Override
-    public void add(Good good) throws IllegalArgumentException {
+    public void add(Good good) throws IllegalArgumentException, NullPointerException {
         dao.add(good);
     }
 
