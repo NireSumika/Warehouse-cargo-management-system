@@ -1,5 +1,6 @@
 package service.impl;
 
+import dao.GoodDAO;
 import dao.filestore.DaoByFile;
 import entity.Good;
 import service.GoodService;
@@ -8,8 +9,17 @@ import java.io.File;
 import java.util.List;
 
 public class GoodServiceImpl implements GoodService {
-    private DaoByFile dao = new DaoByFile();
+
+    private GoodDAO dao;
     private File file;
+
+    public GoodServiceImpl() {
+        this(new DaoByFile());
+    }
+
+    public GoodServiceImpl(GoodDAO dao) {
+        this.dao = dao;
+    }
 
     public void load(File FILE_PATH){
         file = FILE_PATH;
@@ -65,4 +75,8 @@ public class GoodServiceImpl implements GoodService {
 
     }
 
+    @Override
+    public boolean deleteAll() {
+        return dao.deleteAll();
+    }
 }

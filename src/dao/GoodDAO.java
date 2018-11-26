@@ -16,4 +16,6 @@ public interface GoodDAO {
 
     boolean save(File FILE_PATH);
 
+    public boolean deleteAll();
+
 }

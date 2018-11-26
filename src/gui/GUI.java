@@ -16,11 +16,12 @@ import javax.swing.JOptionPane;
 import javax.swing.table.TableRowSorter;
 
 import entity.Good;
+import service.GoodService;
 import service.impl.GoodServiceImpl;
 
-public class GUI extends JDialog{
+public class GUI extends JFrame{
 
-    private GoodServiceImpl GSI = new GoodServiceImpl();
+    private GoodService GS;
 
     //获取屏幕大小的工具
     private static Toolkit kit = Toolkit.getDefaultToolkit();
@@ -35,13 +36,13 @@ public class GUI extends JDialog{
     private JTextField searchNumberText = new JTextField(2);
     private JButton searchBtn = new JButton("通过id/名称查找");
     private JButton deleteBtn = new JButton("通过id删除");
+    private JButton deleteAll = new JButton("清空");
 
     //下方操作栏组件
     private JButton statisticsAllBtn = new JButton("统计所有货品库存总价并排序");
     private JTextField statisticsText = new JTextField(2);
     private JButton statisticsLessBtn = new JButton("统计库存量小于该值的货品");
     private JButton random = new JButton("随机生成");
-
 
     //添加功能组件
     private JTextField addNumberText = new JTextField(2);
@@ -52,8 +53,12 @@ public class GUI extends JDialog{
     private JTextField addmanufactorText = new JTextField(10);
     private JButton addBtn = new JButton("添加货品");//添加按钮
 
+    public GUI() {
+        this(new GoodServiceImpl());
+    }
 
-    public GUI(){
+    public GUI(GoodService GS){
+        this.GS = GS;
         //窗口基本属性
         setTitle("仓库货物管理系统");
         setIconImage(kit.createImage("title.png"));
@@ -63,7 +68,7 @@ public class GUI extends JDialog{
         setLocation(x, y);
         setResizable(false);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        GSI.load();
+        GS.load();
         getAllGoods();
         this.component();
         this.listener();
@@ -96,6 +101,7 @@ public class GUI extends JDialog{
         add(statisticsAllBtn).setBounds(50,470,250,25);
         add(statisticsLessBtn).setBounds(550,470,200,25);
         add(random).setBounds(330,470,100,25);
+        add(deleteAll).setBounds(270,25,60,25);
 
         //输入框
         add(searchNumberText).setBounds(350,26,120,25);
@@ -106,16 +112,15 @@ public class GUI extends JDialog{
         add(addsupplierText).setBounds(455,425,90,25);
         add(addmanufactorText).setBounds(555,425,90,25);
         add(statisticsText).setBounds(455,470,80,25);
-
     }
 
-    //监听器
+    //按钮监听器
     private void listener(){
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 int confirm = JOptionPane.showConfirmDialog(GUI.this,"是否保存?","",JOptionPane.YES_NO_OPTION);
-                if(confirm == JOptionPane.YES_OPTION) GSI.save();
+                if(confirm == JOptionPane.YES_OPTION) GS.save();
 
             }
         });
@@ -131,8 +136,18 @@ public class GUI extends JDialog{
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 int confirm = JOptionPane.showConfirmDialog(GUI.this, "是否保存当前文件?", "", JOptionPane.YES_NO_OPTION);
-                if (confirm == JOptionPane.YES_OPTION) GSI.save();
+                if (confirm == JOptionPane.YES_OPTION) GS.save();
                 load();
+                getAllGoods();
+            }
+        });
+
+        deleteAll.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int confirm = JOptionPane.showConfirmDialog(GUI.this, "是否清空数据?", "", JOptionPane.YES_NO_OPTION);
+                if (confirm == JOptionPane.YES_OPTION) GS.deleteAll();
+                getAllGoods();
             }
         });
 
@@ -140,7 +155,6 @@ public class GUI extends JDialog{
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 search();
-                //
             }
         });
 
@@ -150,7 +164,6 @@ public class GUI extends JDialog{
                 delete();
                 searchNumberText.setText("");
             }
-
         });
 
         addBtn.addActionListener(new ActionListener() {
@@ -180,6 +193,7 @@ public class GUI extends JDialog{
                 statisticsText.setText("");
             }
         });
+
         random.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -187,8 +201,6 @@ public class GUI extends JDialog{
                 statisticsText.setText("");
             }
         });
-
-
     }
 
     private void load(){
@@ -197,7 +209,7 @@ public class GUI extends JDialog{
         jfc.showOpenDialog(this);
         File file = jfc.getSelectedFile();
         if (file == null) return;
-        GSI.load(file);
+        GS.load(file);
     }
 
     private void add(){
@@ -252,14 +264,13 @@ public class GUI extends JDialog{
         String addManufactor = addmanufactorText.getText();
         Good good = new Good(addNumber, addName, addStock, addPrice, addSupplier, addManufactor,new Date());
         try{
-            GSI.add(good);
+            GS.add(good);
             getAllGoods();
         }catch (IllegalArgumentException e){
             JOptionPane.showMessageDialog(this,"该id的货品已存在，请勿重复添加！");
         }catch (NullPointerException e){
             JOptionPane.showMessageDialog(this,"该名称的货品已存在，请勿重复添加！");
         }
-
     }
 
     private void search(){
@@ -273,14 +284,14 @@ public class GUI extends JDialog{
                 JOptionPane.showMessageDialog(this,"请输入正确的货品id！");
                 return;
             }
-            Good good = GSI.search(id);
+            Good good = GS.search(id);
             if(good == null) {
                 JOptionPane.showMessageDialog(this,"货品不存在!");
             } else {
                 JOptionPane.showMessageDialog(this,good.toString());
             }
         }catch (NumberFormatException e){
-            Good good = GSI.search(name);
+            Good good = GS.search(name);
             if (good == null){
                 JOptionPane.showMessageDialog(this,"货品不存在!");
             } else {
@@ -298,7 +309,7 @@ public class GUI extends JDialog{
                 JOptionPane.showMessageDialog(this,"请输入正确的货品id！");
                 return;
             }
-            t = GSI.delete(id);
+            t = GS.delete(id);
         } catch (NumberFormatException e){
             JOptionPane.showMessageDialog(this,"请输入正确的id!");
             return;
@@ -310,11 +321,8 @@ public class GUI extends JDialog{
 
     private void statisticsAll(){
         Statistics st = new Statistics();
-        st.setGSI(GSI);
+        st.setGSI(GS);
         st.setVisible(true);
-
-
-
     }
 
     private void statisticsLess(){
@@ -328,22 +336,22 @@ public class GUI extends JDialog{
         }catch(NumberFormatException e){
             JOptionPane.showMessageDialog(this,"请输入正确的整数!");
         }
-
     }
 
     private void randomCreate(){
-        int num = 0;
+        int num;
         try{
             num = Integer.parseInt(statisticsText.getText());
         }catch (NumberFormatException e){
             JOptionPane.showMessageDialog(this,"请输入正确的正整数!");
             return;
         }
+        Random random = new Random();
         if(num == 1){
-            int id = new Random().nextInt(100+num)+1;
+            int id = random.nextInt(100+num)+1;
             String name = getRandomString(4);
-            int stock = new Random().nextInt(500)+1;
-            double price = new Random().nextInt(5000)/10.0;
+            int stock = random.nextInt(500)+1;
+            double price = (random.nextInt(5000)/10.0)+0.1;
             String supplier = getRandomString(5);
             String manufactor = getRandomString(6);
             addNumberText.setText(""+id);
@@ -352,19 +360,19 @@ public class GUI extends JDialog{
             addPriceText.setText(""+price);
             addsupplierText.setText(supplier);
             addmanufactorText.setText(manufactor);
-
-            //GSI.add(new Good(id,name,stock,price,supplier,manufactor,new Date()));
-            //getAllGoods();
         }else {
             for (int i = 0; i < num; i++) {
-                int id = new Random().nextInt(100 + num) + 1;
-                String name = getRandomString(4);
-                int stock = new Random().nextInt(500) + 1;
-                double price = new Random().nextInt(5000) / 10.0;
+                int id = random.nextInt(100000) + 1;
+                while(GS.search(id) != null){
+                    id = random.nextInt(100000) + 1;
+                }
+                String name = getRandomString(5);
+                int stock = random.nextInt(500) + 1;
+                double price = (random.nextInt(5000) / 10.0) + 0.1;
 
                 String supplier = getRandomString(5);
                 String manufactor = getRandomString(6);
-                GSI.add(new Good(id, name, stock, price, supplier, manufactor, new Date()));
+                GS.add(new Good(id, name, stock, price, supplier, manufactor, new Date()));
                 getAllGoods();
             }
         }
@@ -376,10 +384,10 @@ public class GUI extends JDialog{
         String str = "zxcvbnmlkjhgfdsaqwertyuiopQWERTYUIOPASDFGHJKLZXCVBNM";
         //由Random生成随机数
         Random random = new Random();
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         //长度为几就循环几次
         for (int i = 0; i < length; ++i) {
-            //产生0-61的数字
+            //产生0-52的数字
             int number = random.nextInt(str.length());
             //将产生的数字通过length次承载到sb中
             sb.append(str.charAt(number));
@@ -394,7 +402,7 @@ public class GUI extends JDialog{
         tableModel.setRowCount(0);
         tableModel.setColumnIdentifiers(new Object[] { "货品号/id","货品名","库存","单价","供应商","生产商","进货日期" });
 
-        List<Good> list = GSI.getAll();
+        List<Good> list = GS.getAll();
         String[][] tbody = list2Array(list);
         for(String[] s :tbody){
             tableModel.addRow(s);
@@ -418,10 +426,10 @@ public class GUI extends JDialog{
                else return 0;
             }
         });
-        sorter.setSortable(1, false);
-        sorter.setSortable(4,false);
-        sorter.setSortable(5, false);
-        sorter.setSortable(6,false);
+        //sorter.setSortable(1, false);
+        //sorter.setSortable(4,false);
+        //sorter.setSortable(5, false);
+        //sorter.setSortable(6,false);
 
         table.setAutoCreateRowSorter(true);
         table.setModel(tableModel);
@@ -434,7 +442,7 @@ public class GUI extends JDialog{
         DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
         tableModel.setRowCount(0);
         tableModel.setColumnIdentifiers(new Object[] { "货品号/id","货品名","库存","单价","供应商","生产商","进货日期" });
-        List<Good> list = GSI.getAll();
+        List<Good> list = GS.getAll();
         List<Good> lesslist = new ArrayList<>();
         for (Good good : list) {
             if (good.getStock() < less) {
@@ -463,11 +471,6 @@ public class GUI extends JDialog{
                 else return 0;
             }
         });
-        sorter.setSortable(1, false);
-        sorter.setSortable(4,false);
-        sorter.setSortable(5, false);
-        sorter.setSortable(6,false);
-
         table.setAutoCreateRowSorter(true);
         table.setModel(tableModel);
         table.setRowSorter(sorter);
@@ -488,5 +491,4 @@ public class GUI extends JDialog{
         }
         return tbody;
     }
-
 }

@@ -9,14 +9,14 @@ import java.util.Objects;
  * @author Mr.Zhang
  */
 public class Good implements Serializable {
-    private int id;
-    private String name;
-    private int stock;
-    private double price;
-    private Date time;
-    private String manufactor;
-    private String supplier;
-    private double value;
+    private int id;//货物编号
+    private String name;//货物名称
+    private int stock;//库存量
+    private double price;//单价
+    private Date time;//入库时间
+    private String manufactor;//生产厂家
+    private String supplier;//供应商
+    private double value;//库存总价
 
     public Good() {
     }

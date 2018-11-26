@@ -10,7 +10,7 @@ import java.util.List;
 
 public class DaoByFile implements GoodDAO {
 
-    private static ArrayList<Good> goodArrayList = new ArrayList<>();
+    private static List<Good> goodArrayList = new ArrayList<>();
 
     @Override
     public boolean add(Good good) throws IllegalArgumentException,  NullPointerException{
@@ -21,7 +21,6 @@ public class DaoByFile implements GoodDAO {
             if(g.getName().equals(good.getName())){
                 throw new NullPointerException();
             }
-
         }
         return goodArrayList.add(good);
     }
@@ -36,6 +35,9 @@ public class DaoByFile implements GoodDAO {
         return new ArrayList<>(goodArrayList);
     }
 
+    public boolean deleteAll(){
+        return goodArrayList.removeAll(goodArrayList);
+    }
 
     @SuppressWarnings("unchecked")
     @Override

@@ -1,6 +1,7 @@
 package gui;
 
 import entity.Good;
+import service.GoodService;
 import service.impl.GoodServiceImpl;
 
 import javax.swing.*;
@@ -15,10 +16,10 @@ class Statistics extends JFrame {
     //获取屏幕大小的工具
     private static Toolkit kit = Toolkit.getDefaultToolkit();
 
-    private GoodServiceImpl GSI;
+    private GoodService GS;
 
-    void setGSI(GoodServiceImpl GSI){
-        this.GSI = GSI;
+    void setGSI(GoodService GS){
+        this.GS = GS;
         sort();
     }
 
@@ -81,7 +82,7 @@ class Statistics extends JFrame {
     }
 
     private void sort(){
-        List<Good> list = GSI.getAll();
+        List<Good> list = GS.getAll();
         list.sort(new Comparator<Good>() {
             @Override
             public int compare(Good good, Good t1) {
